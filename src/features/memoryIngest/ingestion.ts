@@ -10,6 +10,10 @@ import {
   type JsonSchema,
   type ParseResult,
 } from "../../libs/defensiveJsonParser";
+import {
+  renderSystemPrompt,
+  type PromptTemplateValues,
+} from "./promptTemplates";
 import type { IngestConfig } from "./types";
 
 const SESSION_PAGE_SIZE = 20;
@@ -243,12 +247,16 @@ export function buildTranscriptWindows(
 export async function summarizeWindow(
   layla: LaylaSDK,
   config: IngestConfig,
+  promptTemplateValues: PromptTemplateValues,
   rawText: string,
   signal: AbortSignal,
 ): Promise<string> {
   const completion = await layla.chat.completions.create({
     messages: [
-      { role: "system", content: config.summarySystem },
+      {
+        role: "system",
+        content: renderSystemPrompt(config.summarySystem, promptTemplateValues),
+      },
       {
         role: "user",
         content: `${rawText}\n\n${config.summaryInstruction}`,
@@ -263,12 +271,16 @@ export async function summarizeWindow(
 export async function generateKnowledgeGraph(
   layla: LaylaSDK,
   config: IngestConfig,
+  promptTemplateValues: PromptTemplateValues,
   summary: string,
   signal: AbortSignal,
 ): Promise<{ display: GraphDisplayData; json: string; triples: GraphTriple[] }> {
   const completion = await layla.chat.completions.create({
     messages: [
-      { role: "system", content: config.graphSystem },
+      {
+        role: "system",
+        content: renderSystemPrompt(config.graphSystem, promptTemplateValues),
+      },
       {
         role: "user",
         content: `${summary}\n\n${config.graphInstruction}`,

@@ -409,6 +409,101 @@ body {
   opacity: 0.68;
 }
 
+.template-reference {
+  margin-bottom: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+.template-reference > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.template-reference > summary::-webkit-details-marker {
+  display: none;
+}
+.template-reference > summary::after {
+  content: "›";
+  margin-left: 2px;
+  color: var(--muted);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1;
+  transform: rotate(90deg);
+  transition: transform 0.16s ease;
+}
+.template-reference[open] > summary::after {
+  transform: rotate(-90deg);
+}
+.template-count {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+.template-reference-body {
+  padding: 0 16px 16px;
+  border-top: 1px solid var(--border);
+}
+.template-reference-body > p {
+  margin: 13px 0;
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+.template-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.template-reference table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  text-align: left;
+}
+.template-reference th,
+.template-reference td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.template-reference th {
+  color: var(--muted);
+  background: var(--bg-deep);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+.template-reference td {
+  color: var(--text-2);
+  line-height: 1.45;
+}
+.template-reference th:first-child,
+.template-reference td:first-child {
+  width: 38%;
+}
+.template-reference tr:last-child td {
+  border-bottom: none;
+}
+.template-reference code {
+  color: var(--energy-b);
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono",
+    monospace;
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
 /* ---------- sticky CTA ---------- */
 .cta-bar {
   position: sticky;

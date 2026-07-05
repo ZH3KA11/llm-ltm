@@ -3,6 +3,7 @@ import type { LaylaCharacter } from "@layla-network/sdk";
 import type { IngestConfig } from "../types";
 import type { ConfigSaveState } from "../useIngestFlow";
 import { Field } from "../components/Field";
+import { PROMPT_TEMPLATE_FIELDS } from "../promptTemplates";
 
 interface CharacterSettingsProps {
   character: LaylaCharacter;
@@ -124,6 +125,41 @@ export function CharacterSettings({
           value={config.graphInstruction}
         />
       </div>
+
+      <details className="template-reference">
+        <summary>
+          <span>Prompt template fields</span>
+          <span className="template-count">
+            {PROMPT_TEMPLATE_FIELDS.length} available
+          </span>
+        </summary>
+        <div className="template-reference-body">
+          <p>
+            These fields are replaced with the selected character and persona
+            just before each prompt is sent.
+          </p>
+          <div className="template-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Template</th>
+                  <th scope="col">Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                {PROMPT_TEMPLATE_FIELDS.map((field) => (
+                  <tr key={field.key}>
+                    <td>
+                      <code>{field.template}</code>
+                    </td>
+                    <td>{field.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
 
       <div className="cta-bar">
         <button

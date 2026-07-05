@@ -17,6 +17,7 @@ import {
   summarizeWindow,
 } from "./ingestion";
 import { sleep } from "./layla";
+import { loadPromptTemplateValues } from "./promptTemplates";
 import type {
   GraphEdge,
   IngestConfig,
@@ -233,6 +234,11 @@ export function useIngestAnimation({
         await sleep(180, signal);
         setPhase(1);
 
+        const promptTemplateValues = await loadPromptTemplateValues(
+          layla,
+          character,
+          signal,
+        );
         const memoryDrafts: IngestedMemoryDraft[] = [];
 
         for (let i = 0; i < windows.length; i += 1) {
@@ -246,6 +252,7 @@ export function useIngestAnimation({
           const summary = await summarizeWindow(
             layla,
             config,
+            promptTemplateValues,
             windows[i].rawText,
             signal,
           );
@@ -385,6 +392,7 @@ export function useIngestAnimation({
           const graph = await generateKnowledgeGraph(
             layla,
             config,
+            promptTemplateValues,
             memoryDrafts[i].summary ?? "",
             signal,
           );

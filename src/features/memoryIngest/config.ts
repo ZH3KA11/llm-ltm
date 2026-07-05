@@ -1,13 +1,16 @@
 import type { GraphNodeKind } from "../../demo/data";
+import { SYSTEM_PROMPT_CONTEXT_TEMPLATE } from "./promptTemplates";
 import type { IngestConfig } from "./types";
 
 export const DEFAULT_CONFIG: IngestConfig = {
-  summarySystem:
-    "You are a meticulous archivist of a character's inner life. Read each conversation and distil durable facts, feelings, relationships, and turning points. Ignore small talk and meta-chatter.",
+  summarySystem: `You are a meticulous archivist of a character's inner life. Read each conversation and distil durable facts, feelings, relationships, and turning points. Ignore small talk and meta-chatter.
+
+${SYSTEM_PROMPT_CONTEXT_TEMPLATE}`,
   summaryInstruction:
     "Write a summary of the conversation above. Prefer concrete specifics over generalities, and keep the character's own voice.",
-  graphSystem:
-    "You extract a knowledge graph from a character's memories. Identify entities - people, places, events, traits, objects - and the relationships connecting them.",
+  graphSystem: `You extract a knowledge graph from a character's memories. Identify entities - people, places, events, traits, objects - and the relationships connecting them.
+
+${SYSTEM_PROMPT_CONTEXT_TEMPLATE}`,
   graphInstruction: `Return JSON array in this format: [{"subject": "entity1", "relationship": "relation", "object": "entity2"}]. Keep labels short, merge duplicates, and only add a relation when the text supports it.`,
 };
 

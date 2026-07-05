@@ -26,6 +26,7 @@ context and preserve relationships across long-running chats.
 - Keep per-character ingest settings in Layla's file storage
 - Customize the system prompt and instruction used for summarization
 - Customize the system prompt and instruction used for graph extraction
+- Resolve character and persona templates in both system prompts at generation time
 - Skip already-processed history by using the latest saved memory timestamp
 - Read chat sessions and history through paginated SDK calls
 - Summarize overlapping transcript windows into long-term memory drafts
@@ -47,7 +48,8 @@ context and preserve relationships across long-running chats.
 4. **Build transcript windows.** New chat messages are sorted by time and
    grouped into small overlapping windows so nearby context stays together.
 5. **Summarize.** Each window is sent to Layla chat completions with the
-   configured summary prompt.
+   configured summary prompt. Character-card and persona templates are resolved
+   immediately before the request.
 6. **Graph.** Each summary is sent back to the model for JSON graph extraction.
    The app defensively parses graph triples and visualizes the resulting nodes
    and relationships.
@@ -164,6 +166,22 @@ The file has versioned per-character entries:
 
 If the file is missing or a setting is invalid, the app falls back to the
 defaults in `src/features/memoryIngest/config.ts`.
+
+Both system prompts support these templates:
+
+| Template | Value |
+| --- | --- |
+| `{{char}}` | Character name |
+| `{{user}}` | Name from the character-specific Layla persona |
+| `{{persona}}` | Description from the character-specific Layla persona |
+| `{{character_card}}` | Full Character Card V2 JSON (excluding image payload data) |
+| `{{description}}` | Compact character description |
+| `{{personality}}` | Compact character personality |
+
+The app obtains the selected character through `layla.characters.list()` and
+its attached persona through `layla.personas.get(character.id)`. Missing
+templates are appended to older or customized system prompts, then every
+template is replaced immediately before the prompt is sent to chat completions.
 
 ## Project Structure
 
