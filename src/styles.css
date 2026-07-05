@@ -356,6 +356,9 @@ body {
 .config-card.graph .badge {
   background: rgba(179, 108, 255, 0.16);
 }
+.config-card.engine .badge {
+  background: rgba(100, 214, 178, 0.14);
+}
 .config-card h3 {
   margin: 0;
   font-size: 14.5px;
@@ -394,6 +397,9 @@ body {
 .textarea {
   min-height: 78px;
 }
+.input {
+  appearance: auto;
+}
 .input:focus,
 .textarea:focus {
   outline: none;
@@ -407,6 +413,22 @@ body {
 .textarea:disabled {
   cursor: progress;
   opacity: 0.68;
+}
+.input:disabled {
+  cursor: progress;
+  opacity: 0.68;
+}
+.field-hint,
+.field-error {
+  margin: 7px 1px 0;
+  font-size: 11px;
+  line-height: 1.45;
+}
+.field-hint {
+  color: var(--muted);
+}
+.field-error {
+  color: var(--danger);
 }
 
 .template-reference {

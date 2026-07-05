@@ -9,12 +9,12 @@ interface ConfigFile {
   characters: Record<string, IngestConfig>;
 }
 
-const CONFIG_KEYS: Array<keyof IngestConfig> = [
+const TEXT_CONFIG_KEYS = [
   "summarySystem",
   "summaryInstruction",
   "graphSystem",
   "graphInstruction",
-];
+] as const;
 
 function encodeText(text: string): string {
   const bytes = new TextEncoder().encode(text);
@@ -45,14 +45,23 @@ function normalizeConfig(value: unknown): IngestConfig {
   if (!value || typeof value !== "object") return DEFAULT_CONFIG;
 
   const record = value as Partial<Record<keyof IngestConfig, unknown>>;
-  return CONFIG_KEYS.reduce<IngestConfig>(
+  const textConfig = TEXT_CONFIG_KEYS.reduce(
     (nextConfig, key) => ({
       ...nextConfig,
       [key]:
         typeof record[key] === "string" ? record[key] : DEFAULT_CONFIG[key],
     }),
-    DEFAULT_CONFIG,
+    {} as Pick<IngestConfig, (typeof TEXT_CONFIG_KEYS)[number]>,
   );
+
+  return {
+    inferenceEngine:
+      typeof record.inferenceEngine === "string" &&
+      record.inferenceEngine.length > 0
+        ? record.inferenceEngine
+        : null,
+    ...textConfig,
+  };
 }
 
 function parseConfigFile(json: string): ConfigFile {

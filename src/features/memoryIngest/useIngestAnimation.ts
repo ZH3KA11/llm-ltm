@@ -174,6 +174,25 @@ export function useIngestAnimation({
     async function ingestMemories() {
       try {
         setPhase(0);
+        const engineSelection = await layla.chat.setInferenceEngine(
+          config.inferenceEngine,
+          { signal },
+        );
+
+        if (!engineSelection.success) {
+          throw new Error(
+            config.inferenceEngine
+              ? `Inference engine "${config.inferenceEngine}" is unavailable. Choose another engine in settings.`
+              : "Layla could not restore the default inference engine.",
+          );
+        }
+
+        pushRow({
+          kind: "system",
+          tick: "ENGINE",
+          text: "Inference engine selected",
+          bold: engineSelection.engineName ?? "Layla default",
+        });
         pushRow({
           kind: "system",
           tick: "CONNECT",

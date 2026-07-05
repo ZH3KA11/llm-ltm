@@ -1,4 +1,5 @@
 import type { LaylaCharacter } from "@layla-network/sdk";
+import { truncateText } from "../../../libs/truncateText";
 
 interface CharacterPickerProps {
   characters: LaylaCharacter[];
@@ -47,7 +48,7 @@ export function CharacterPicker({
             {characters.map((character, index) => {
               const data = character.data.data;
               const tag = String((data.tags ?? [])[0] ?? "character");
-              const tagline = String(
+              const tagline = truncateText(
                 data.extensions?.tagline ?? data.personality ?? "",
               );
               const portrait = portraits[character.id];

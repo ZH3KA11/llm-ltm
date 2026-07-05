@@ -3,6 +3,7 @@ import { SYSTEM_PROMPT_CONTEXT_TEMPLATE } from "./promptTemplates";
 import type { IngestConfig } from "./types";
 
 export const DEFAULT_CONFIG: IngestConfig = {
+  inferenceEngine: null,
   summarySystem: `You are a meticulous archivist of a character's inner life. Read each conversation and distil durable facts, feelings, relationships, and turning points. Ignore small talk and meta-chatter.
 
 ${SYSTEM_PROMPT_CONTEXT_TEMPLATE}`,

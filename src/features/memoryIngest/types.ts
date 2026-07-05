@@ -3,6 +3,7 @@ import type { DemoEntity } from "../../demo/data";
 export type AppScreen = "picker" | "settings" | "ingesting";
 
 export interface IngestConfig {
+  inferenceEngine: string | null;
   summarySystem: string;
   summaryInstruction: string;
   graphSystem: string;

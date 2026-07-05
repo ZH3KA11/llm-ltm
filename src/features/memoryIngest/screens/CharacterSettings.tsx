@@ -1,15 +1,17 @@
-import type { Dispatch, SetStateAction } from "react";
-import type { LaylaCharacter } from "@layla-network/sdk";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import type { LaylaCharacter, LaylaSDK } from "@layla-network/sdk";
 import type { IngestConfig } from "../types";
 import type { ConfigSaveState } from "../useIngestFlow";
 import { Field } from "../components/Field";
 import { PROMPT_TEMPLATE_FIELDS } from "../promptTemplates";
+import { truncateText } from "../../../libs/truncateText";
 
 interface CharacterSettingsProps {
   character: LaylaCharacter;
   config: IngestConfig;
   configError: string | null;
   configSaveState: ConfigSaveState;
+  layla: LaylaSDK;
   onBack: () => void;
   onStart: () => void;
   portrait: string;
@@ -21,13 +23,23 @@ export function CharacterSettings({
   config,
   configError,
   configSaveState,
+  layla,
   onBack,
   onStart,
   portrait,
   setConfig,
 }: CharacterSettingsProps) {
+  const [inferenceEngines, setInferenceEngines] = useState<string[]>([]);
+  const [inferenceEnginesError, setInferenceEnginesError] = useState<
+    string | null
+  >(null);
+  const [isLoadingInferenceEngines, setIsLoadingInferenceEngines] =
+    useState(true);
   const data = character.data.data;
-  const tagline = String(data.extensions?.tagline ?? data.personality ?? "");
+  const tagline = truncateText(
+    data.extensions?.tagline ?? data.personality ?? "",
+  );
+  const description = truncateText(data.description);
   const isLoadingConfig = configSaveState === "loading";
   const statusText =
     configSaveState === "loading"
@@ -39,8 +51,34 @@ export function CharacterSettings({
           : configSaveState === "error"
             ? "Settings not saved"
             : "Per-character settings";
-  const setConfigValue = (key: keyof IngestConfig) => (value: string) =>
-    setConfig((current) => ({ ...current, [key]: value }));
+  const setConfigValue =
+    (key: Exclude<keyof IngestConfig, "inferenceEngine">) =>
+    (value: string) =>
+      setConfig((current) => ({ ...current, [key]: value }));
+  const savedEngineIsMissing =
+    config.inferenceEngine !== null &&
+    !inferenceEngines.includes(config.inferenceEngine);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    void layla.chat
+      .getInferenceEngines({ signal: controller.signal })
+      .then((engines) => {
+        if (controller.signal.aborted) return;
+
+        setInferenceEngines(engines);
+        setIsLoadingInferenceEngines(false);
+      })
+      .catch((error) => {
+        if (controller.signal.aborted) return;
+
+        setInferenceEnginesError((error as Error).message);
+        setIsLoadingInferenceEngines(false);
+      });
+
+    return () => controller.abort();
+  }, [layla]);
 
   return (
     <>
@@ -67,7 +105,7 @@ export function CharacterSettings({
           </div>
         </div>
       </div>
-      <p className="desc">{data.description}</p>
+      <p className="desc">{description}</p>
 
       <div className="section-label">
         <span className="dot" />
@@ -77,6 +115,57 @@ export function CharacterSettings({
         </span>
       </div>
       {configError && <div className="config-error">{configError}</div>}
+
+      <div className="config-card engine">
+        <header>
+          <span className="badge">{"⚙️"}</span>
+          <div>
+            <h3>Inference engine</h3>
+            <p className="sub">Choose the engine used for this ingest</p>
+          </div>
+        </header>
+        <div className="field">
+          <label htmlFor="inference-engine">Engine</label>
+          <select
+            className="input"
+            disabled={isLoadingConfig || isLoadingInferenceEngines}
+            id="inference-engine"
+            onChange={(event) =>
+              setConfig((current) => ({
+                ...current,
+                inferenceEngine: event.target.value || null,
+              }))
+            }
+            value={config.inferenceEngine ?? ""}
+          >
+            <option value="">
+              {isLoadingInferenceEngines
+                ? "Loading engines..."
+                : "Default engine"}
+            </option>
+            {savedEngineIsMissing && (
+              <option value={config.inferenceEngine ?? ""}>
+                {config.inferenceEngine}{" "}
+                {isLoadingInferenceEngines || inferenceEnginesError
+                  ? "(saved)"
+                  : "(unavailable)"}
+              </option>
+            )}
+            {inferenceEngines.map((engine) => (
+              <option key={engine} value={engine}>
+                {engine}
+              </option>
+            ))}
+          </select>
+          {inferenceEnginesError ? (
+            <p className="field-error">{inferenceEnginesError}</p>
+          ) : (
+            <p className="field-hint">
+              Default uses the inference engine selected in Layla.
+            </p>
+          )}
+        </div>
+      </div>
 
       <div className="config-card">
         <header>

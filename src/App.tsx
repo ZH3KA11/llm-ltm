@@ -34,6 +34,7 @@ export default function App() {
           config={flow.config}
           configError={flow.configError}
           configSaveState={flow.configSaveState}
+          layla={layla}
           onBack={flow.backToPicker}
           onStart={flow.startIngesting}
           portrait={portrait}
