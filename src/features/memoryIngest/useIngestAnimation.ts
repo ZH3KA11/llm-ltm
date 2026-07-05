@@ -379,6 +379,9 @@ export function useIngestAnimation({
             bold: `#${i + 1}`,
           });
 
+          // skip graphs without summaries
+          if(!memoryDrafts[i].summary) continue;
+
           const graph = await generateKnowledgeGraph(
             layla,
             config,
