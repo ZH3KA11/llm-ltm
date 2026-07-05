@@ -26,15 +26,15 @@ export function Summary({
       <div className="stats">
         <div className="stat">
           <div className="n">{memories}</div>
-          <div className="l">Memories</div>
+          <div className="l">New Memories</div>
         </div>
         <div className="stat">
           <div className="n">{entities}</div>
-          <div className="l">Entities</div>
+          <div className="l">New Entities</div>
         </div>
         <div className="stat">
           <div className="n">{relations}</div>
-          <div className="l">Links</div>
+          <div className="l">New Links</div>
         </div>
       </div>
       <div className="summary-actions">
