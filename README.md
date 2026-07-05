@@ -75,8 +75,20 @@ npm run dev
 
 During local development, `src/main.tsx` installs a demo Layla host from
 `src/demo/data.ts`. The mock host provides sample characters, portraits, chat
-history, memory storage, and canned LLM responses, so the app can be exercised
-in a normal browser without the Layla WebView.
+history, and memory storage. Chat completions are sent to LM Studio through its
+OpenAI-compatible API.
+
+Start LM Studio's local server on `http://localhost:1234` with a chat model
+available, then run:
+
+```bash
+npm run dev
+```
+
+The browser connects directly to LM Studio at
+`http://localhost:1234/v1`. It automatically uses the first model returned by
+`GET /v1/models`. To select a specific model, copy `.env.example` to
+`.env.local` and set `VITE_LM_STUDIO_MODEL`. Restart Vite after changing it.
 
 Preview a production build locally:
 

@@ -271,7 +271,7 @@ export async function generateKnowledgeGraph(
       { role: "system", content: config.graphSystem },
       {
         role: "user",
-        content: `${summary}\n\n${config.graphInstruction}\n[[task:graph]]`,
+        content: `${summary}\n\n${config.graphInstruction}`,
       },
     ],
     signal,
