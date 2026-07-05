@@ -66,12 +66,13 @@ const TEMPLATE_PATTERN =
 export const SYSTEM_PROMPT_CONTEXT_TEMPLATE = `Character context:
 Character name: {{char}}
 User name: {{user}}
+
 User persona:
 {{persona}}
-Full character card:
-{{character_card}}
+
 Character description:
 {{description}}
+
 Character personality:
 {{personality}}`;
 
