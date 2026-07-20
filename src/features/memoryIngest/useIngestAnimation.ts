@@ -179,14 +179,6 @@ export function useIngestAnimation({
           { signal },
         );
 
-        if (!engineSelection.success) {
-          throw new Error(
-            config.inferenceEngine
-              ? `Inference engine "${config.inferenceEngine}" is unavailable. Choose another engine in settings.`
-              : "Layla could not restore the default inference engine.",
-          );
-        }
-
         pushRow({
           kind: "system",
           tick: "ENGINE",
