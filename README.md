@@ -187,8 +187,10 @@ Both system prompts support these templates:
 
 The app obtains the selected character through `layla.characters.list()` and
 its attached persona through `layla.personas.get(character.id)`. Missing
-templates are appended to older or customized system prompts, then every
-template is replaced immediately before the prompt is sent to chat completions.
+compact-context templates are appended to older or customized system prompts,
+then every template is replaced immediately before the prompt is sent to chat
+completions. The full `{{character_card}}` value is opt-in and is only included
+when that placeholder appears in the configured prompt.
 
 ## Project Structure
 

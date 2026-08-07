@@ -279,10 +279,11 @@ before the first summary. The resulting template-value object is reused for all
 windows, avoiding one bridge request per model call.
 
 `renderSystemPrompt` has a compatibility-oriented behavior: if a customizable
-system prompt omits any supported template, the missing fields are appended as
-a context block before substitution. This means even old or heavily edited
-prompts receive all character/persona values. It also means intentionally
-omitting a context field does not remove that field from the model prompt.
+system prompt omits a compact context template, the missing field is appended
+as a context block before substitution. This means even old or heavily edited
+prompts receive the character/persona basics. The full `{{character_card}}`
+template is the exception: it is only substituted when the configured prompt
+explicitly contains it, so the card JSON is opt-in.
 
 When serializing the full character card, the portrait is replaced with
 `[omitted from text prompt]`. Portrait data URIs can be several megabytes and
@@ -546,9 +547,10 @@ per window. All windows and graph calls are sequential. This reduces load on an
 on-device model, makes progress deterministic, and avoids concurrent host
 writes, at the cost of throughput.
 
-Prompt size can be substantial because every system prompt receives character
-and persona context, including a textual Character Card V2 serialization. The
-image payload is removed, but long cards still repeat for every completion.
+Every system prompt receives compact character and persona context. A textual
+Character Card V2 serialization is included only when the configured prompt
+explicitly uses `{{character_card}}`; its image payload is removed, but long
+cards can still substantially increase prompt size when enabled.
 
 The current app uses non-streaming completions because it consumes only final
 summary/JSON outputs. The UI remains responsive through phase logs and progress

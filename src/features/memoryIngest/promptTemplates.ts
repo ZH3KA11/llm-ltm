@@ -106,7 +106,8 @@ export function renderSystemPrompt(
   values: PromptTemplateValues,
 ): string {
   const missingFields = PROMPT_TEMPLATE_FIELDS.filter(
-    ({ template }) => !systemPrompt.includes(template),
+    ({ key, template }) =>
+      key !== "character_card" && !systemPrompt.includes(template),
   );
   const missingContext = missingFields
     .map(({ key, label }) => `${label}: {{${key}}}`)
