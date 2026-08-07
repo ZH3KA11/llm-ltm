@@ -3,6 +3,7 @@ import type { LaylaCharacter, LaylaSDK } from "@layla-network/sdk";
 import { INGEST_PHASES, kindColorVar } from "../config";
 import { useIngestAnimation } from "../useIngestAnimation";
 import type { IngestConfig } from "../types";
+import { IngestionHistory } from "../components/IngestionHistory";
 import { Summary } from "../components/Summary";
 
 interface IngestingProps {
@@ -25,13 +26,15 @@ export function Ingesting({
   const {
     abort,
     edges,
+    error,
     finished,
+    ingestions,
     nodes,
     overall,
     particles,
     phase,
     phaseProg,
-    rows,
+    sourceDetails,
     stageRef,
     stats,
   } = useIngestAnimation({ character, config, layla });
@@ -180,20 +183,7 @@ export function Ingesting({
         )}
       </div>
 
-      {!finished ? (
-        <div className="log">
-          <div className="roll">
-            {rows.map((row) => (
-              <div className={`log-row ${row.kind}`} key={row.id}>
-                <span className="tick">{row.tick}</span>
-                <span className="what">
-                  {row.text} {row.bold && <b>{row.bold}</b>}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : (
+      {finished && (
         <Summary
           entities={stats.entities}
           memories={stats.memories}
@@ -203,6 +193,13 @@ export function Ingesting({
           relations={stats.relations}
         />
       )}
+
+      <IngestionHistory
+        error={error}
+        finished={finished}
+        ingestions={ingestions}
+        sourceDetails={sourceDetails}
+      />
     </div>
   );
 }

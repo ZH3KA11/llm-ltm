@@ -90,6 +90,7 @@ export interface TranscriptWindow {
   rawText: string;
   timestamp: number;
   sessionId: string;
+  messageCount: number;
 }
 
 export interface GraphTriple {
@@ -105,6 +106,18 @@ export interface IngestedMemoryDraft extends LaylaMemory {
 export interface GraphDisplayData {
   entities: DemoEntity[];
   relations: DemoRelation[];
+}
+
+export interface LlmResponseDetails {
+  response: string;
+  systemPrompt: string;
+  userPrompt: string;
+}
+
+export interface KnowledgeGraphResponse extends LlmResponseDetails {
+  display: GraphDisplayData;
+  json: string;
+  triples: GraphTriple[];
 }
 
 interface LoadTranscriptArgs {
@@ -250,22 +263,31 @@ export async function summarizeWindow(
   promptTemplateValues: PromptTemplateValues,
   rawText: string,
   signal: AbortSignal,
-): Promise<string> {
+): Promise<LlmResponseDetails> {
+  const systemPrompt = renderSystemPrompt(
+    config.summarySystem,
+    promptTemplateValues,
+  );
+  const userPrompt = `${rawText}\n\n${config.summaryInstruction}`;
   const completion = await layla.chat.completions.create({
     messages: [
       {
         role: "system",
-        content: renderSystemPrompt(config.summarySystem, promptTemplateValues),
+        content: systemPrompt,
       },
       {
         role: "user",
-        content: `${rawText}\n\n${config.summaryInstruction}`,
+        content: userPrompt,
       },
     ],
     signal,
   });
 
-  return completion.choices[0]?.message.content.trim() ?? "";
+  return {
+    response: completion.choices[0]?.message.content.trim() ?? "",
+    systemPrompt,
+    userPrompt,
+  };
 }
 
 export async function generateKnowledgeGraph(
@@ -274,16 +296,21 @@ export async function generateKnowledgeGraph(
   promptTemplateValues: PromptTemplateValues,
   summary: string,
   signal: AbortSignal,
-): Promise<{ display: GraphDisplayData; json: string; triples: GraphTriple[] }> {
+): Promise<KnowledgeGraphResponse> {
+  const systemPrompt = renderSystemPrompt(
+    config.graphSystem,
+    promptTemplateValues,
+  );
+  const userPrompt = `${summary}\n\n${config.graphInstruction}`;
   const completion = await layla.chat.completions.create({
     messages: [
       {
         role: "system",
-        content: renderSystemPrompt(config.graphSystem, promptTemplateValues),
+        content: systemPrompt,
       },
       {
         role: "user",
-        content: `${summary}\n\n${config.graphInstruction}`,
+        content: userPrompt,
       },
     ],
     signal,
@@ -293,7 +320,14 @@ export async function generateKnowledgeGraph(
   const triples = parseGraphTriples(parsed);
   const display = parseGraphDisplay(parsed, triples);
 
-  return { display, json, triples };
+  return {
+    display,
+    json,
+    triples,
+    response: content,
+    systemPrompt,
+    userPrompt,
+  };
 }
 
 export function makeMemoryDraft(
@@ -466,7 +500,7 @@ function formatWindow(
     .join("\n");
   const timestamp = Math.max(...entries.map((entry) => entry.timestamp));
 
-  return { rawText, timestamp, sessionId };
+  return { rawText, timestamp, sessionId, messageCount: entries.length };
 }
 
 function speakerName(
