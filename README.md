@@ -7,9 +7,6 @@ For a code-level walkthrough of the architecture, ingestion pipeline, Layla SDK
 integration, persistence model, graph parsing, and extension points, see the
 [technical deep-dive guide](docs/TECHNICAL_DEEP_DIVE.md).
 
-For a narrative introduction aimed at Layla users and aspiring mini-app
-creators, see the [Medium-ready article](docs/MEDIUM_ARTICLE.md).
-
 The app reads a character's conversations, breaks new messages into overlapping
 windows, condenses each window into durable memories, and extracts a compact
 knowledge graph from those memories. Each saved memory keeps the original text,
